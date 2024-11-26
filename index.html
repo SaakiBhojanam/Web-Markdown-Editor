@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Markdown Editor</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    header {
+      background-color: #0078D7;
+      color: white;
+      padding: 1rem 2rem;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+
+    section {
+      text-align: center;
+      padding: 1rem;
+      background-color: #f1f1f1;
+      margin: 0 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    section p {
+      font-size: 1.1rem;
+      color: #555;
+    }
+
+    main {
+      display: flex;
+      flex-direction: column;
+      max-width: 1200px;
+      margin: 2rem auto;
+      gap: 1.5rem;
+    }
+
+    .editor-container {
+      display: flex;
+      flex-direction: row;
+      gap: 1.5rem;
+      height: 500px;
+    }
+
+    textarea {
+      flex: 1;
+      padding: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      resize: none;
+      background-color: #fff;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    #preview {
+      flex: 1;
+      padding: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background-color: #fafafa;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      overflow-y: auto;
+    }
+
+    textarea:focus {
+      outline: 2px solid #0078D7;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+    }
+
+    button {
+      background-color: #0078D7;
+      color: white;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #005A9E;
+    }
+
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      margin-top: 2rem;
+      background-color: #0078D7;
+      color: white;
+    }
+
+    footer p {
+      margin: 0;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Markdown Editor</h1>
+  </header>
+  <section>
+    <p>Welcome to the Markdown Editor! This tool allows you to write and preview Markdown content in real time. As you type in the Markdown editor, the corresponding HTML output is displayed on the right side. You can also export your work as a Markdown (.md) file or an HTML (.html) file for further use. This is a great way to quickly draft and share Markdown documents.</p>
+  </section>
+  <main>
+    <div class="editor-container">
+      <textarea id="markdown" placeholder="Write your Markdown here..."></textarea>
+      <div id="preview"></div>
+    </div>
+    <div class="buttons">
+      <button onclick="downloadMarkdown()">Export as Markdown</button>
+      <button onclick="downloadHTML()">Export as HTML</button>
+    </div>
+  </main>
+  <footer>
+    <p>&copy; 2024 Markdown Editor. All rights reserved.</p>
+  </footer>
+  <script>
+    const markdownInput = document.getElementById("markdown");
+    const previewOutput = document.getElementById("preview");
+
+    // Convert Markdown to HTML using a basic parser
+    function parseMarkdown(markdown) {
+      return markdown
+        .replace(/^# (.*$)/gim, '<h1>$1</h1>') // H1
+        .replace(/^## (.*$)/gim, '<h2>$1</h2>') // H2
+        .replace(/^### (.*$)/gim, '<h3>$1</h3>') // H3
+        .replace(/^\> (.*$)/gim, '<blockquote>$1</blockquote>') // Blockquote
+        .replace(/\*\*(.*)\*\*/gim, '<b>$1</b>') // Bold
+        .replace(/\*(.*)\*/gim, '<i>$1</i>') // Italic
+        .replace(/\~\~(.*)\~\~/gim, '<del>$1</del>') // Strikethrough
+        .replace(/\`(.*?)\`/gim, '<code>$1</code>') // Inline Code
+        .replace(/\n$/gim, '<br />') // Line Break
+        .replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2" target="_blank">$1</a>'); // Links
+    }
+
+    // Update preview live
+    markdownInput.addEventListener("input", () => {
+      const markdownText = markdownInput.value;
+      previewOutput.innerHTML = parseMarkdown(markdownText);
+    });
+
+    // Export Markdown as a .md file
+    function downloadMarkdown() {
+      const blob = new Blob([markdownInput.value], { type: "text/markdown" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "document.md";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Export Markdown as an .html file
+    function downloadHTML() {
+      const blob = new Blob([previewOutput.innerHTML], { type: "text/html" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "document.html";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
